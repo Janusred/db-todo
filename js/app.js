@@ -13,6 +13,11 @@ const PouchDB = require("pouchdb");
   var db = new PouchDB('todos');
   var remoteCouch = false;
 
+  db.changes({
+    since: "now",
+    live: true
+  }).on("change", showTodos);
+
   // We have to create a new todo document and enter it in the database
   function addTodo(text) {
     var todo = {
@@ -32,6 +37,13 @@ const PouchDB = require("pouchdb");
 
   // Show the current list of todos by reading them from the database
   function showTodos() {
+/*     db.allDocs({ include_docs: true, descending: true }, function(err, doc) {
+       redrawTodosUI(doc.rows);
+     });*/
+     db.allDocs({ include_docs: true, descending: false }).then(doc => {
+      redrawTodosUI(doc.rows);
+    });
+
   }
 
   function checkboxChanged(todo, event) {
